@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Layn Signage</title>
+<style>
+:root{--bg:#070b10;--panel:#0e151d;--panel2:#111a23;--fg:#e8eef4;--mut:#8a99a8;--line:#1c2833;--direkte:#38bdf8;--partner:#ffb020;--intern:#7d8b99;--accent:#38bdf8;--good:#3ddc97;--bad:#ff7a6b;--warn:#ffb020;--f-body:system-ui,'Helvetica Neue',Arial,'Liberation Sans','DejaVu Sans',sans-serif;--f-mono:ui-monospace,'DejaVu Sans Mono','Liberation Mono',Menlo,monospace;color-scheme:dark}
+html{font-size:clamp(9px,.8333vw,24px);background:var(--bg)}
+body{margin:0;padding:0;background:radial-gradient(60rem 28rem at 12% -8%,#0d1b28 0,transparent 60%),var(--bg);color:var(--fg);font-family:var(--f-body);font-size:1rem;overflow:hidden;height:100vh;cursor:none}
+.stage{position:fixed;top:0;left:0;right:0;bottom:0;padding-left:max(2.2vw,16px);padding-right:max(2.2vw,16px);display:flex;flex-direction:column}
+.top{display:flex;align-items:center;justify-content:space-between;gap:2rem;height:6.2rem;flex:none}
+.brand{font-weight:600;font-size:2.1rem;letter-spacing:-.01em;white-space:nowrap}.brand b{color:var(--accent)}
+.ttl{font-size:1.9rem;font-weight:500;color:var(--fg);flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ttl small{display:block;font:400 1rem var(--f-mono);color:var(--mut);margin-top:.15rem}
+.clk{font:500 1.7rem var(--f-mono);color:var(--mut);min-width:6rem;text-align:right}
+.slides{position:relative;flex:1;min-height:0;margin-bottom:2.2rem}
+.slide{position:absolute;top:0;left:0;right:0;bottom:0;opacity:0;visibility:hidden;transition:opacity .7s,visibility .7s;display:flex;flex-direction:column;gap:1.4rem;min-height:0}
+.slide.on{opacity:1;visibility:visible}
+.dots{position:fixed;left:0;right:0;bottom:.8rem;display:flex;gap:.55rem;justify-content:center}
+.dots i{width:.7rem;height:.7rem;border-radius:50%;background:var(--line)}.dots i.on{background:var(--accent)}
+#prog{position:fixed;left:0;bottom:0;height:.3rem;background:var(--accent);width:0}
+@keyframes pg{from{width:0}to{width:100%}}
+.panel{background:linear-gradient(180deg,#111a23,#0d141c);border:1px solid var(--line);border-radius:1rem;padding:1.4rem 1.8rem;min-width:0;min-height:0;display:flex;flex-direction:column}
+.panel>h2{margin:0 0 .8rem;font:600 1.05rem var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.row{display:flex;gap:1.4rem;min-height:0}.row>*{flex:1;min-width:0}
+.fill{flex:1;min-height:0}
+.lab{font:500 1.05rem var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.num{font:500 5rem/1 var(--f-mono);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.num.xl{font-size:13rem}.num.l{font-size:7rem}.num.s{font-size:3.4rem}
+.sub{color:var(--mut);font-size:1.35rem;margin-top:.5rem}
+.tile{background:linear-gradient(180deg,#111a23,#0d141c);border:1px solid var(--line);border-radius:1rem;padding:1.4rem 1.8rem;position:relative;overflow:hidden;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.5rem}
+.tile::before{content:"";position:absolute;top:0;left:0;right:0;height:.22rem;background:var(--accent)}
+.tile.good::before{background:var(--good)}.tile.warn::before{background:var(--warn)}.tile.bad::before{background:var(--bad)}.tile.p::before{background:var(--partner)}
+.grid{display:grid;gap:1.4rem;min-height:0}
+svg{display:block;width:100%;height:100%}
+svg text{font-family:var(--f-mono);fill:var(--mut)}
+.bars{display:flex;flex-direction:column;justify-content:space-around;flex:1;min-height:0;gap:.4rem}
+.br{display:grid;grid-template-columns:17rem 1fr 20rem;gap:1.2rem;align-items:center;font-size:1.6rem}
+.br .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.br .t{height:1.5rem;background:#16212c;border-radius:.75rem;overflow:hidden}.br .t i{display:block;height:100%;border-radius:.75rem}
+.br .v{font:500 1.5rem var(--f-mono);text-align:right;white-space:nowrap}
+.leg{display:flex;gap:2rem;font-size:1.3rem;color:var(--mut)}.leg i{display:inline-block;width:1.1rem;height:1.1rem;border-radius:.25rem;margin-right:.6rem;vertical-align:-.1rem}
+.badge{display:inline-block;font:600 1.1rem var(--f-mono);padding:.2rem .8rem;border-radius:999px;letter-spacing:.04em;white-space:nowrap}
+.b-good{background:rgba(61,220,151,.16);color:var(--good)}.b-bad{background:rgba(255,122,107,.16);color:var(--bad)}.b-warn{background:rgba(255,176,32,.16);color:var(--warn)}.b-mut{background:#1b2733;color:var(--mut)}.b-acc{background:rgba(56,189,248,.16);color:var(--accent)}
+.card{background:linear-gradient(180deg,#111a23,#0d141c);border:1px solid var(--line);border-radius:1rem;padding:1rem 1.3rem;display:flex;flex-direction:column;gap:.4rem;min-width:0;min-height:0}
+.card .nm{font-size:1.5rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .mt{font-size:1.1rem;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .sp{flex:1;min-height:0}
+.al{display:grid;grid-template-columns:1.6fr 1.3fr 14rem 14rem;gap:1.2rem;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--line);font-size:1.5rem}
+.panel>.al{flex:0 1 9rem;font-size:1.9rem}.panel>.al .m{font-size:1.3rem}.panel>.al .badge{font-size:1.25rem}
+.al:last-child{border:0}
+.al .m{color:var(--mut);font-size:1.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.al .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.d{font:400 1.2rem/1.35 var(--f-body);color:var(--mut);letter-spacing:0;text-transform:none}
+.panel>h2+.d{margin:-.5rem 0 .9rem}
+.empty{color:var(--mut);font-size:1.8rem;margin:auto}
+</style></head><body><div class="stage">
+ <div class="top"><div class="brand">LAYN <b>FLOW</b></div><div class="ttl" id="ttl"></div><div class="clk" id="clk"></div></div>
+ <div class="slides" id="slides"></div>
+</div>
+<div class="dots" id="dots"></div><div id="prog"></div>
+<script>
+function boot(A){
+const nf=n=>Math.round(n).toLocaleString('nb-NO'),sum=a=>a.reduce((x,y)=>x+y,0);
+const pc=(a,b)=>b?(100*a/b).toFixed(1).replace('.',','):'0,0',pc0=(a,b)=>b?Math.round(100*a/b):0;
+const isClosed=s=>/avslutt|inaktiv|inactive/i.test(s);
+const grp=r=>r==='ukjent'?'intern':r;
+const ROUTE={direkte:'Direkte',partner:'Via partner',intern:'Intern/pilot'};
+const CAT={legevakt:'Legevakt',klinikk:'Klinikker og sykehus',hfu:'HFU og helsestasjoner',annet:'Øvrig',intern:'Intern/demo'};
+const col={direkte:'var(--direkte)',partner:'var(--partner)',intern:'var(--intern)'};
+const spark=(v,color,w=200,h=56)=>{const mx=Math.max(...v,1),mn=0,p=4,x=i=>p+i*(w-2*p)/(v.length-1),y=q=>h-p-(q-mn)/(mx-mn||1)*(h-2*p);const pts=v.map((q,i)=>x(i)+','+y(q)).join(' ');return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polygon points="${x(0)},${h} ${pts} ${x(v.length-1)},${h}" fill="${color}" opacity=".14"/><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="3" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><circle cx="${x(v.length-1)}" cy="${y(v[v.length-1])}" r="4" fill="${color}"/></svg>`};
+function niceMax(mx){const st=[5,10,20,50,100,200,500,1000,2000,5000,10000,20000,50000,100000].find(s=>mx/s<=5)||100000;return [Math.ceil(mx/st)*st,st]}
+function stackSvg(layers,labels,opt={}){const W=1700,H=opt.h||640,Lm=110,Bt=56,Tp=60,pw=W-Lm-10,ph=H-Bt-Tp;const tot=labels.map((_,j)=>sum(layers.map(l=>l.v[j])));const [mx,st]=niceMax(Math.max(...tot,1));const y=v=>Tp+ph-ph*v/mx,bw=pw/labels.length,fw=Math.min(bw*.66,150);let s='';
+ for(let t=0;t<=mx;t+=st)s+=`<line x1="${Lm}" x2="${W-10}" y1="${y(t)}" y2="${y(t)}" stroke="#1c2833"/><text x="${Lm-14}" y="${y(t)+9}" text-anchor="end" font-size="26">${nf(t)}</text>`;
+ labels.forEach((lb,j)=>{const x=Lm+j*bw+(bw-fw)/2;let acc=0;layers.forEach(l=>{const v=l.v[j];if(!v)return;const hh=y(acc)-y(acc+v);s+=`<rect x="${x}" y="${y(acc+v)}" width="${fw}" height="${hh}" fill="${l.c}" rx="3"/>`;if(hh>=34&&opt.pct)s+=`<text x="${x+fw/2}" y="${y(acc+v)+hh/2+9}" text-anchor="middle" font-size="25" style="fill:#07131b;font-weight:600">${pc0(v,tot[j])} %</text>`;acc+=v});
+  s+=`<text x="${x+fw/2}" y="${y(tot[j])-14}" text-anchor="middle" font-size="30" style="fill:#e8eef4">${nf(tot[j])}</text><text x="${x+fw/2}" y="${H-14}" text-anchor="middle" font-size="28">${lb}</text>`});
+ return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">${s}</svg>`}
+function barRows(items,{color,valFn,max}){const mx=max||Math.max(...items.map(i=>i.v),1);return `<div class="bars">`+items.map(i=>`<div class="br"><span class="n" title="${i.n}">${i.n}</span><span class="t"><i style="width:${Math.max(1.5,100*i.v/mx)}%;background:${i.c||color}"></i></span><span class="v">${valFn?valFn(i):nf(i.v)}</span></div>`).join('')+`</div>`}
+function donut(parts,center,sub){const cx=200,cy=200,R0=170,r0=112;let ang=-Math.PI/2,s='';const t=sum(parts.map(p=>p.v));parts.forEach(p=>{if(!p.v)return;const a2=ang+2*Math.PI*p.v/t,lg=(a2-ang)>Math.PI?1:0,P=(a,r)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];const [x1,y1]=P(ang,R0),[x2,y2]=P(a2-.004,R0),[x3,y3]=P(a2-.004,r0),[x4,y4]=P(ang,r0);s+=`<path d="M${x1} ${y1}A${R0} ${R0} 0 ${lg} 1 ${x2} ${y2}L${x3} ${y3}A${r0} ${r0} 0 ${lg} 0 ${x4} ${y4}Z" fill="${p.c}"/>`;ang=a2});
+ return `<svg viewBox="0 0 400 400"><g>${s}</g><text x="200" y="215" text-anchor="middle" font-size="64" style="fill:#e8eef4;font-weight:500">${center}</text><text x="200" y="258" text-anchor="middle" font-size="24">${sub}</text></svg>`}
+
+const M=A.months,N=M.length,L=N-1,T=A.T,SR=A.SR,TOT=sum(T),per=`${M[0]}–${M[L]} 2026`;
+const cs=k=>A.cats[k],csum=k=>sum(cs(k));
+const HEL=csum('legevakt')+csum('klinikk')+csum('hfu'),REST=csum('annet')+csum('intern');
+const slides=[];const S=(title,sub,html)=>slides.push({title,sub,html});
+const D=t=>`<span class="d">${t}</span>`;
+const chg=(a,b)=>b?Math.round(100*(a-b)/b):0;
+const sgn=v=>(v>0?'+':v<0?'−':'')+Math.abs(v);
+const avg=(a,i,j)=>sum(a.slice(i,j+1))/(j-i+1);
+const rec=T.indexOf(Math.max(...T));
+const g=chg(avg(T,7,8),avg(T,3,5));
+const mini=(v,c,h)=>`<div style="height:${h||'6rem'}">${spark(v,c,200,56)}</div>`;
+// 1
+S('Året så langt',per,`<div class="row" style="flex:1"><div class="panel" style="flex:2.1;justify-content:center"><div class="lab">Flowtickets ${per}</div><div class="num xl">${nf(TOT)}</div><div class="sub">${nf(TOT/N)} i snitt pr måned · ${nf(T[L])} i ${M[L].toLowerCase()}</div>${D('Summen av alle flowtickets i alle domener, inkludert intern bruk og demo.')}</div><div style="flex:1;display:grid;gap:1.4rem;grid-template-rows:repeat(3,1fr)"><div class="tile"><span class="lab">Aktive kunder ${M[L].toLowerCase()}</span><span class="num s">${A.act[L]}</span>${D('Kunder med minst én ticket i '+M[L].toLowerCase()+', uten intern bruk.')}</div><div class="tile good"><span class="lab">Helseandel</span><span class="num s">${pc(HEL,TOT)} %</span>${D('Legevakt, klinikker og HFU som andel av alle tickets.')}</div><div class="tile p"><span class="lab">Via partner</span><span class="num s">${pc(sum(SR.partner),TOT)} %</span>${D('Andel tickets fra kunder som går gjennom en partner.')}</div></div></div><div class="panel" style="height:32%"><h2>Utvikling pr måned</h2><span class="d" style="margin:-.5rem 0 .4rem">Totalt antall tickets for hver måned.</span><div class="fill">${spark(T,'var(--accent)',1000,120)}</div></div>`);
+// 2
+S('Flowtickets pr måned',per,`<div class="panel" style="flex:1"><div class="d">Antall tickets pr måned, delt på direkte kunder, kunder via partner og intern bruk. Prosenten i hver søyle er andelen av månedens total.</div><div class="leg" style="margin-top:.6rem"><span><i style="background:var(--direkte)"></i>Direkte</span><span><i style="background:var(--partner)"></i>Via partner</span><span><i style="background:var(--intern)"></i>Intern og pilot</span></div><div class="fill">${stackSvg([{c:'var(--direkte)',v:SR.direkte},{c:'var(--partner)',v:SR.partner},{c:'var(--intern)',v:SR.intern}],M,{pct:1})}</div></div>`);
+// 3
+S('Nøkkeltall',per,`<div class="grid" style="flex:1;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr)"><div class="tile"><span class="lab">Rekordmåned</span><span class="num l">${M[rec]}</span><span class="sub">${nf(T[rec])} flowtickets</span>${D('Måneden med flest tickets totalt.')}</div><div class="tile"><span class="lab">Aktive domener ${M[L].toLowerCase()}</span><span class="num l">${A.actDom[L]}</span><span class="sub">av ${A.domTotal} registrerte domener</span>${D('Domener med minst én ticket i '+M[L].toLowerCase()+'.')}</div><div class="tile"><span class="lab">Kunder med bruk i året</span><span class="num l">${A.kunderDirekte+A.kunderPartner}</span><span class="sub">${A.kunderDirekte} direkte · ${A.kunderPartner} via partner</span>${D('Kunder med bruk i 2026, uten intern bruk og avsluttede.')}</div><div class="tile ${g>=0?'good':'warn'}"><span class="lab">Utvikling siste to måneder</span><span class="num l">${sgn(g)} %</span><span class="sub">snitt ${M[7]}–${M[8]} mot ${M[3]}–${M[5]}</span>${D('Endring i tickets pr måned, uten juli som er ferie.')}</div><div class="tile"><span class="lab">Snitt pr aktiv kunde</span><span class="num l">${nf(T[L]/A.act[L])}</span><span class="sub">tickets i ${M[L].toLowerCase()}</span>${D('Månedens tickets delt på antall aktive kunder.')}</div><div class="tile good"><span class="lab">Nye kunder i 2026</span><span class="num l">${A.new.length}</span><span class="sub">tatt i bruk etter januar</span>${D('Kunder med første ticket etter januar. Se egen side.')}</div></div>`);
+// 4
+S('Kundebasen',per,`<div class="row" style="flex:1"><div class="panel" style="flex:1.5"><h2>Kunder etter størrelse</h2>${D('Antall kunder i hver størrelsesgruppe, målt i snitt tickets pr måned.')}${barRows(A.tiers.map(t=>({n:t.n,v:t.v})),{color:'var(--accent)',valFn:i=>i.v+' kunder'})}</div><div class="panel" style="flex:1"><h2>Aktive kunder pr måned</h2>${D('Antall kunder med minst én ticket i måneden.')}<div class="fill">${stackSvg([{c:'var(--direkte)',v:A.act}],M,{h:520})}</div></div></div>`);
+// 5
+const pcs=T.map((v,i)=>v?100*SR.partner[i]/v:0);
+S('Direkte mot partner',per,`<div class="row" style="flex:1"><div class="panel" style="flex:1"><h2>Fordeling</h2>${D('Hvor stor andel av tickets som kommer direkte, via partner og fra intern bruk.')}<div class="fill">${donut([{v:sum(SR.direkte),c:'var(--direkte)'},{v:sum(SR.partner),c:'var(--partner)'},{v:sum(SR.intern),c:'var(--intern)'}],pc0(sum(SR.partner),TOT)+' %','via partner')}</div><div class="leg" style="flex-wrap:wrap;margin-top:.8rem"><span><i style="background:var(--direkte)"></i>Direkte ${nf(sum(SR.direkte))}</span><span><i style="background:var(--partner)"></i>Partner ${nf(sum(SR.partner))}</span><span><i style="background:var(--intern)"></i>Intern ${nf(sum(SR.intern))}</span></div></div><div class="panel" style="flex:1.5"><h2>Partnerandel pr måned</h2>${D('Hvor stor del av månedens tickets som kommer via partnere.')}<div class="fill">${stackSvg([{c:'var(--partner)',v:SR.partner}],M,{h:560})}</div></div></div>`);
+// 6
+S('Helse mot øvrig',per,`<div class="row" style="flex:1"><div class="panel" style="flex:1"><h2>Helseandel</h2>${D('Legevakt, klinikker og HFU samlet som andel av alle tickets.')}<div class="fill">${donut([{v:csum('legevakt'),c:'#ef7b66'},{v:csum('klinikk'),c:'#b48be0'},{v:csum('hfu'),c:'#4fc58f'},{v:REST,c:'#6c7883'}],pc0(HEL,TOT)+' %','helse')}</div></div><div style="flex:1.2;display:grid;gap:1.4rem;grid-template-rows:repeat(4,1fr)">${[['Legevakt',csum('legevakt'),'#ef7b66'],['Klinikker og sykehus',csum('klinikk'),'#b48be0'],['HFU og helsestasjoner',csum('hfu'),'#4fc58f'],['Øvrig og intern',REST,'#6c7883']].map(([n,v,c])=>`<div class="tile" style="flex-direction:row;align-items:center;justify-content:space-between"><span style="font-size:1.9rem"><i style="display:inline-block;width:1.2rem;height:1.2rem;border-radius:.3rem;background:${c};margin-right:.9rem"></i>${n}</span><span><span class="num s">${nf(v)}</span> <span class="sub" style="display:inline;margin-left:.8rem">${pc(v,TOT)} %</span></span></div>`).join('')}</div></div>`);
+// 7
+const hf=cs('hfu');
+S('HFU og helsestasjoner',per,`<div class="row" style="flex:1"><div style="flex:.8;display:grid;gap:1.4rem;grid-template-rows:repeat(3,1fr)"><div class="tile good"><span class="lab">Tickets i HFU</span><span class="num l">${nf(sum(hf))}</span>${D('Sum tickets fra helsestasjoner for unge.')}</div><div class="tile"><span class="lab">Snitt pr måned</span><span class="num l">${nf(sum(hf)/N)}</span>${D('Gjennomsnitt pr måned for alle HFU samlet.')}</div><div class="tile"><span class="lab">HFU-kunder</span><span class="num l">${A.hfu.kunder}</span>${D('Antall aktive HFU-kunder, som regel kommuner.')}</div></div><div class="panel" style="flex:2"><h2>HFU-tickets pr måned</h2>${D('Samlet antall tickets fra alle HFU og helsestasjoner.')}<div class="fill">${stackSvg([{c:'#4fc58f',v:hf}],M,{h:560})}</div></div></div>`);
+// 8
+const tr=(k,t,c,d)=>`<div class="panel"><h2>${t}</h2>${D(d)}<div style="margin:.4rem 0"><span class="num l" style="color:${c}">${nf(csum(k))}</span><div class="sub">${pc(csum(k),TOT)} % av alle tickets · ${sgn(chg(avg(cs(k),7,8),avg(cs(k),3,5)))} % siste to måneder</div></div><div class="fill">${spark(cs(k),c,600,100)}</div></div>`;
+S('Legevakt og klinikker',per,`<div class="row" style="flex:1">${tr('legevakt','Legevakt','#ef7b66','Tickets pr måned fra legevakt.')}${tr('klinikk','Klinikker og sykehus','#b48be0','Tickets pr måned fra klinikker og sykehus.')}</div>`);
+// 9
+S('Nye kunder i 2026','Hvordan går det med bruken siden oppstart?',A.new.length?`<div class="d" style="font-size:1.4rem">Hvert kort er en kunde som tok Layn i bruk etter januar. Grafen viser tickets pr måned siden oppstart. Merket viser om bruken vokser, er stabil, faller eller har stoppet.</div><div class="grid" style="flex:1;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr)">${A.new.map(c=>{const b={'Vokser':'b-good','Stabil':'b-acc','Faller':'b-warn','Stille':'b-bad','Engangs/event':'b-mut'}[c.status]||'b-acc';return `<div class="card"><div class="nm">${c.label}</div><div class="mt">Start ${M[c.start]}${c.pilot?' · pilot':''}</div><div class="sp">${spark(c.serie.length>1?c.serie:[0,c.serie[0]],'var(--accent)',200,56)}</div><div><span class="badge ${b}">${c.status}</span></div></div>`}).join('')}</div>`:'<div class="empty">Ingen nye kunder</div>');
+// 10
+const mv=A.moves;
+S('Utvikling i bruk',`Snitt ${M[7]}–${M[8]} mot ${M[3]}–${M[5]}`,`<div class="row" style="flex:1"><div style="flex:1;display:grid;gap:1.4rem;grid-template-rows:repeat(3,1fr)"><div class="tile good"><span class="lab">Vokser</span><span class="num l">${mv.vokser}</span>${D('Kunder med mer enn 10 % økning i tickets pr måned.')}</div><div class="tile"><span class="lab">Stabile</span><span class="num l">${mv.stabil}</span>${D('Kunder innenfor pluss/minus 10 %.')}</div><div class="tile bad"><span class="lab">Faller</span><span class="num l">${mv.faller}</span>${D('Kunder med mer enn 10 % nedgang i tickets pr måned.')}</div></div><div class="panel" style="flex:1.6"><h2>Netto endring</h2>${D('Samlet endring i tickets pr måned, for kunder med minst 50 tickets før.')}${barRows([{n:'Økning',v:mv.plus,c:'var(--good)'},{n:'Nedgang',v:mv.minus,c:'var(--bad)'}],{valFn:i=>(i.n==='Økning'?'+':'−')+nf(i.v)})}<div class="sub" style="margin-top:1rem">Netto ${mv.plus-mv.minus>=0?'+':'−'}${nf(Math.abs(mv.plus-mv.minus))} tickets pr måned. Engangs- og eventbruk er utelatt.</div></div></div>`);
+// 11
+const al=A.alerts,alN=al.kritisk+al.folg+al.svakere;
+S('Varsler: lav eller fallende bruk',`${alN} av ${al.total} kunder under 70 % av normalt nivå`,`<div class="row" style="flex:1"><div style="flex:1;display:grid;gap:1.4rem;grid-template-rows:repeat(3,1fr)"><div class="tile bad"><span class="lab">Kritisk</span><span class="num l">${al.kritisk}</span>${D('Under 25 % av normalt nivå.')}</div><div class="tile warn"><span class="lab">Følg med</span><span class="num l">${al.folg}</span>${D('25–50 % av normalt nivå.')}</div><div class="tile"><span class="lab">Svakere</span><span class="num l">${al.svakere}</span>${D('50–70 % av normalt nivå.')}</div></div><div class="panel" style="flex:1.6"><h2>Samlet bruk hos varslede kunder</h2>${D('Tickets pr måned summert over kundene som har varsel. Navnene ligger i det interne dashboardet.')}<div class="fill">${spark(al.serie,'var(--bad)',600,140)}</div><div class="d" style="margin-top:.6rem">Regel: snitt ${M[7]}–${M[8]} mot snitt ${M[3]}–${M[5]}. Kun kunder med minst 50 tickets pr måned før. Engangs- og eventbruk, intern bruk og avsluttede er utelatt.</div></div></div>`);
+// 12
+const sm=A.sms,smT=sm.map(m=>m.no+m.ut),smS=sum(smT);
+S('SMS','Norge og utland',`<div class="row" style="flex:1"><div style="flex:.7;display:grid;gap:1.4rem;grid-template-rows:repeat(3,1fr)"><div class="tile"><span class="lab">SMS ${per}</span><span class="num">${nf(smS)}</span>${D('Sendte SMS fra alle kunder.')}</div><div class="tile"><span class="lab">${sm[sm.length-1].m} 2026</span><span class="num">${nf(smT[smT.length-1])}</span>${D('SMS sendt i siste måned.')}</div><div class="tile p"><span class="lab">Andel utland</span><span class="num">${pc(sum(sm.map(m=>m.ut)),smS)} %</span>${D('Andel SMS til utenlandske numre.')}</div></div><div class="panel" style="flex:2"><div class="d">SMS pr måned, delt på norske og utenlandske mottakere.</div><div class="leg" style="margin-top:.6rem"><span><i style="background:var(--direkte)"></i>Norge</span><span><i style="background:var(--partner)"></i>Utland</span></div><div class="fill">${stackSvg([{c:'var(--direkte)',v:sm.map(m=>m.no)},{c:'var(--partner)',v:sm.map(m=>m.ut)}],sm.map(m=>m.m),{h:560})}</div></div></div>`);
+// motor
+const SL=15000;let cur=0,timer=null;const $=id=>document.getElementById(id);
+$('slides').innerHTML=slides.map(s=>`<section class="slide">${s.html}</section>`).join('');
+$('dots').innerHTML=slides.map(()=>'<i></i>').join('');
+const els=[...document.querySelectorAll('.slide')],dots=[...document.querySelectorAll('#dots i')];
+function go(n){cur=(n+slides.length)%slides.length;els.forEach((e,i)=>e.classList.toggle('on',i===cur));dots.forEach((d,i)=>d.classList.toggle('on',i===cur));
+ $('ttl').innerHTML=`${slides[cur].title}<small>${slides[cur].sub}</small>`;const p=$('prog');p.style.animation='none';void p.offsetWidth;p.style.animation=`pg ${SL}ms linear forwards`;
+ clearTimeout(timer);timer=setTimeout(()=>go(cur+1),SL)}
+function clock(){$('clk').textContent=new Date().toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'})}
+clock();setInterval(clock,15000);go(0);
+addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(cur+1);if(e.key==='ArrowLeft')go(cur-1)});
+setTimeout(()=>location.reload(),3600e3);
+window.__go=go;
+}
+
+(function(){var s=document.createElement('script');s.src='data.js?t='+Date.now();s.onload=function(){boot(window.LAYN)};s.onerror=function(){document.body.innerHTML='<p style="padding:2rem;font-family:sans-serif">Mangler data.js</p>'};document.body.appendChild(s)})();
+</script></body></html>
